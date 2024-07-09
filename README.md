@@ -14,6 +14,13 @@ Plugin to add a 3D menu map to FlatOut 2
 
 - This plugin isn't enough for a usable menu map on its own! The game scripts need to be configured to move the car and camera positions accordingly!
 
+## LUA functions
+
+For developers, here are the new LUA functions to move the camera and vehicle:
+GUI:SetCameraPosition(x, y, z)
+GUI:SetCameraTarget(x, y, z)
+GUI:SetMenuCarTransform(x1, y1, z1, 0, x2, y2, z2, 0, x3, y3, z3, 0, x4, y4, z4, 1) (this function takes a 4x4 matrix, first 3 pairs are the orientation, then the position)
+
 ## Building
 
 Building is done on an Arch Linux system with CLion and vcpkg being used for the build process. 
