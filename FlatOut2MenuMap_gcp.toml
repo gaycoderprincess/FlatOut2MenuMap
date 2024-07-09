@@ -3,3 +3,4 @@
 
 [main]
 draw_distance = 1000.0
+add_lua_functions = true
