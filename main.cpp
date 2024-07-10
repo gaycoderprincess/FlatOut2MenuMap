@@ -51,9 +51,12 @@ void __attribute__((naked)) LoadMenuMapASM() {
 
 uintptr_t RenderMenuMapASM_call = 0x555B60;
 uintptr_t RenderMenuMapASM_call2 = 0x555A60;
+uintptr_t RenderMenuMapASM_call3 = 0x5548A0;
+uintptr_t RenderMenuMapASM_call4 = 0x595000;
 uintptr_t RenderMenuMapASM_jmp = 0x4CC0FA;
 void __attribute__((naked)) RenderMenuMapASM() {
 	__asm__ (
+		// tree trunks
 		"push eax\n\t"
 		"push ecx\n\t"
 		"mov eax, %2\n\t"
@@ -67,6 +70,7 @@ void __attribute__((naked)) RenderMenuMapASM() {
 		"pop ecx\n\t"
 		"pop eax\n\t"
 
+		// trees
 		"push eax\n\t"
 		"push ecx\n\t"
 		"mov eax, %2\n\t"
@@ -80,12 +84,76 @@ void __attribute__((naked)) RenderMenuMapASM() {
 		"pop ecx\n\t"
 		"pop eax\n\t"
 
+		// grass
+		"push eax\n\t"
+		"push ecx\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"mov eax, [eax+0x1804]\n\t"
+		"mov eax, [eax+0x158]\n\t"
+		"push eax\n\t"
+		"mov eax, esi\n\t" // +1B4
+		"mov ecx, 12\n\t"
+		"call %1\n\t"
+		"pop ecx\n\t"
+		"pop eax\n\t"
+
+		"push eax\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"mov eax, [eax+0x1804]\n\t"
+		"mov eax, [eax+0x160]\n\t"
+		"push eax\n\t"
+		"push esi\n\t" // +1B4
+		"mov eax, 14\n\t"
+		"call %4\n\t"
+		"pop eax\n\t"
+
+		"push eax\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"mov eax, [eax+0x1804]\n\t"
+		"mov eax, [eax+0x15C]\n\t"
+		"push eax\n\t"
+		"push esi\n\t" // +1B4
+		"mov eax, 13\n\t"
+		"call %4\n\t"
+		"pop eax\n\t"
+
+		// vegetation
+		//"push ecx\n\t"
+		//"push edx\n\t"
+		//"push eax\n\t"
+		//// scene ptr
+		//"mov ecx, [esp+0x48]\n\t" // was +3C before
+		//// scene + 0x1A4
+		//"mov edx, [ecx+0x1A4]\n\t"
+		//// camera + 0x10C
+		//"mov eax, ebp\n\t"
+		//"mov eax, [eax+0x10C]\n\t"
+		//"push eax\n\t"
+		//// d3d stuff
+		//"mov eax, 0x8DA718\n\t"
+		//"mov eax, [eax]\n\t"
+		//"push eax\n\t"
+		//// scene + 0x1A8
+		//"mov eax, [ecx+0x1A8]\n\t"
+		//"push eax\n\t"
+		//// scene ptr
+		//"push ecx\n\t"
+		//// camera ptr
+		//"mov ecx, ebp\n\t"
+		//"call %5\n\t"
+		//"pop eax\n\t"
+		//"pop edx\n\t"
+		//"pop ecx\n\t"
+
 		"mov edx, [edi]\n\t"
 		"mov ecx, edi\n\t"
 		"call dword ptr [edx+0x60]\n\t"
 		"jmp %0\n\t"
 			:
-			:  "m" (RenderMenuMapASM_jmp), "m" (RenderMenuMapASM_call), "m" (LoadMenuMapASM_envi), "m" (RenderMenuMapASM_call2)
+			:  "m" (RenderMenuMapASM_jmp), "m" (RenderMenuMapASM_call), "m" (LoadMenuMapASM_envi), "m" (RenderMenuMapASM_call2), "m" (RenderMenuMapASM_call3), "m" (RenderMenuMapASM_call4)
 	);
 }
 
@@ -282,13 +350,13 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 				NyaHookLib::Fill(0x4AC9DC, 0x90, 3);
 				NyaHookLib::Fill(0x4AC9E5, 0x90, 3);
 				NyaHookLib::Fill(0x4AC9EF, 0x90, 3);
+			}
 
-				if (bAlwaysShowMenu) {
-					NyaHookLib::Patch<uint16_t>(0x4ACA17, 0x28EB);
-					static float fSpeed = 100;
-					NyaHookLib::Patch(0x4AC69D + 2, &fSpeed);
-					NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4A8BBB, 0x4A8BD3);
-				}
+			if (bAlwaysShowMenu) {
+				NyaHookLib::Patch<uint16_t>(0x4ACA17, 0x28EB);
+				static float fadeSpeed = 100;
+				NyaHookLib::Patch(0x4AC69D + 2, &fadeSpeed);
+				NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4A8BBB, 0x4A8BD3);
 			}
 		} break;
 		default:
