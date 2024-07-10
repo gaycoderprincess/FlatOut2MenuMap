@@ -2,6 +2,8 @@
 #include "toml++/toml.hpp"
 #include "nya_commonhooklib.h"
 
+bool bAlwaysShowMenu = true;
+
 const char* sCollisionName = "data/tracks/menu/menu1/a/geometry/track_cdb.gen";
 const char* sStageName = "stage1";
 uintptr_t LoadMenuMapASM_envi = 0x8DA758;
@@ -203,8 +205,8 @@ struct tGUIStruct {
 int SetCameraPosition(void* a1) {
 	luaL_checktype(a1, 1, 7);
 	auto data = luaL_checkudata(a1, 1, "GUI");
-	if ( !data )
-		luaL_typerror(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
 	auto gui = *(tGUIStruct**)data;
 	gui->fMenuCarPosX = 0;
 	gui->fMenuCarPosY = 0;
@@ -218,8 +220,8 @@ int SetCameraPosition(void* a1) {
 int SetCameraTarget(void* a1) {
 	luaL_checktype(a1, 1, 7);
 	auto data = luaL_checkudata(a1, 1, "GUI");
-	if ( !data )
-		luaL_typerror(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
 	auto gui = *(tGUIStruct**)data;
 	gui->fMenuCarPosX = 0;
 	gui->fMenuCarPosY = 0;
@@ -233,8 +235,8 @@ int SetCameraTarget(void* a1) {
 int SetMenuCarTransform(void* a1) {
 	luaL_checktype(a1, 1, 7);
 	auto data = luaL_checkudata(a1, 1, "GUI");
-	if ( !data )
-		luaL_typerror(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
 	auto gui = *(tGUIStruct**)data;
 	gui->fMenuCarPosX = 0;
 	gui->fMenuCarPosY = 0;
@@ -242,6 +244,25 @@ int SetMenuCarTransform(void* a1) {
 	for (int i = 0; i < 16; i++) {
 		gui->fMenuCarMatrix[i] = luaL_checknumber(a1, i + 2);
 	}
+	return 0;
+}
+
+int Hide3DMenu(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4ACA17, 0x4ACAD5);
+	return 0;
+}
+
+int Show3DMenu(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	if (bAlwaysShowMenu) NyaHookLib::Patch<uint16_t>(0x4ACA17, 0x28EB);
+	else NyaHookLib::Patch<uint64_t>(0x4ACA17, 0xF883000000B8840F);
 	return 0;
 }
 
@@ -301,6 +322,8 @@ tLUAFunction aGUIFunctions[] = {
 		{ "SetCameraPosition", (uintptr_t)&SetCameraPosition, 0 },
 		{ "SetCameraTarget", (uintptr_t)&SetCameraTarget, 0 },
 		{ "SetMenuCarTransform", (uintptr_t)&SetMenuCarTransform, 0 },
+		{ "Hide3DMenu", (uintptr_t)&Hide3DMenu, 0 },
+		{ "Show3DMenu", (uintptr_t)&Show3DMenu, 0 },
 		{nullptr, 0, 0}
 };
 
@@ -315,7 +338,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 			auto config = toml::parse_file("FlatOut2MenuMap_gcp.toml");
 			float fDrawDistance = config["main"]["draw_distance"].value_or(1000.0f);
 			bool bAddLUAFunctions = config["main"]["add_lua_functions"].value_or(true);
-			bool bAlwaysShowMenu = config["main"]["always_show_menu"].value_or(true);
+			bAlwaysShowMenu = config["main"]["always_show_menu"].value_or(true);
 
 			static char path1[] = "Menu";
 			static char path2[] = "Menu1";
