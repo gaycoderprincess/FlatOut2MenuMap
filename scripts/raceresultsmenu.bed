@@ -1,0 +1,108 @@
+--///////////////////////////////////////////////////////////////////////////
+--// RaceResultsMenu.bed
+--///////////////////////////////////////////////////////////////////////////
+--// Copyright (c) 2005 Bugbear Entertainment ltd. 
+--// All Rights Reserved.
+--// 
+--// @date 19.7.2005 13:54:35
+--// 
+--// @Author Timo Kamarainen (timo.kamarainen@bugbear.fi)
+--///////////////////////////////////////////////////////////////////////////
+
+menu_raceresults = CreateMenuFromTemplate( "template_basic" )
+
+menu_raceresults.options.title = TRANSLATOR(TITLE_RACERESULTS)
+
+
+function nextrace()
+	local f=function()
+		--db.GameFlow.PreRace.Mode=GM_CAREER
+		Event:PostEvent(event("EVENT_RACE_BEGIN"))
+	end
+	return f
+end
+
+
+function menu_raceresults.create( self )
+	self.parent:create( self )
+
+	self:loadResources()
+
+	menu_raceresults.items = {}
+	if db.GameFlow.PreRace.Mode == GM_CAREER then
+		if not GameFlow.IsCupFinished() then
+			table.insert( menu_raceresults.items, MENUITEM( TRANSLATOR(TITLE_NEXTRACE), nextrace(), ICON( self, "icon_sp_single_race" ) ) )
+		end
+		table.insert( menu_raceresults.items, MENUITEM( TRANSLATOR(TITLE_CONTINUECAREER), entermenu( "menu_career" ), ICON( self ) ) )
+	elseif db.GameFlow.PreRace.Mode == GM_SPLITSCREEN then
+		if not GameFlow.IsCupFinished() then
+			table.insert( menu_raceresults.items, MENUITEM( TRANSLATOR(TITLE_NEXTRACE), nextrace(), ICON( self, "icon_sp_single_race" ) ) )
+		end
+		table.insert( menu_raceresults.items, MENUITEM( TRANSLATOR(TITLE_MAINMENU), entermenu( "menu_mainmenu" ), ICON( self ) ) )
+	else
+		table.insert( menu_raceresults.items, MENUITEM( TRANSLATOR(ICON_MAINMENU), entermenu( "menu_mainmenu" ), ICON( self ) ) )	
+	end
+	
+end
+
+dofile("data/tracks/menu/menu1/a/data/startpoints.bed")
+
+function menu_raceresults.init(self)
+	self.parent:init(self)
+
+	local numResults = GameFlow.GetNumResults()
+	
+	StaticText{Name="result_title",Title=TRANSLATOR(HEADER_RESULTS),Align=LEFT,Font=fontsmall(),Position=POS(TITLESAFE_X,100),Size=SIZE(32,32)}
+
+	for i = 1, numResults do
+		
+		local id = GameFlow.GetPlayerIdByPosition( i )
+		local name = GameFlow.GetPlayerName( id )
+		
+		local str = L( i .. ". " )
+		str = WStringConcat( str, name )
+		
+		StaticText{Name="info"..i,Title=str,Align=LEFT,Font=fontsmall(),Position=POS(TITLESAFE_X,140+(i-1)*20),Size=SIZE(32,32)}
+		
+		if db.GameFlow.PreRace.Mode == GM_CAREER or db.GameFlow.PreRace.Mode == GM_SPLITSCREEN then
+			local racePoints = GameFlow.GetPlayerRacePoints( id )
+			local cupPoints = GameFlow.GetPlayerCupPoints( id )
+			
+			local str = L( cupPoints .. "  (+" .. racePoints .. ")" )
+			
+			StaticText{Name="points"..i,Title=str,Align=LEFT,Font=fontsmall(),Position=POS(TITLESAFE_X+200,140+(i-1)*20),Size=SIZE(32,32)}
+		end
+		
+	end
+	
+	GUI:LoadCar(1,1)
+		
+	local pos = Startpoints[20].Position
+	local mat = Startpoints[20].Orientation
+	local offset = {-10.5, 1.1, 10.5}
+		
+	--//GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
+	GUI:SetCameraPosition(12.5, -13.3, -96)
+	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
+	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] - 3, pos[3], 1)
+	--//GUI:SetMenuCarTransform(-0.589197,-0.000000,0.807989, 0, -0.000000,1.000000,-0.000000, 0, -0.807989,-0.000000,-0.589197, pos[1], pos[2], pos[3], 1)
+end
+
+
+function menu_raceresults.update(self,time)
+	self.parent:update(self,time)
+end
+
+
+function menu_raceresults.deinit(self)
+	self.parent:deinit(self)
+	
+	GUI:HideCar()
+end
+
+function menu_raceresults.starthide(self)	
+	GUI:HideCar()
+end
+
+
+
