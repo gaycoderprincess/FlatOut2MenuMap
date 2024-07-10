@@ -12,10 +12,6 @@ Plugin to add a 3D menu map to FlatOut 2
 - Plop the files into your game folder, edit `FlatOut2MenuMap_gcp.toml` to change the options to your liking.
 - Enjoy, nya~ :3
 
-## Notes
-
-- This plugin isn't enough for a usable menu map on its own! The game scripts need to be configured to move the car and camera positions accordingly!
-
 ## LUA functions
 
 For developers, here are the new LUA functions to move the camera and vehicle:
