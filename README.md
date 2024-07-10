@@ -2,7 +2,9 @@
 
 Plugin to add a 3D menu map to FlatOut 2
 
-![preview](https://i.imgur.com/L4uxhJ0.png)
+![preview 1](https://i.imgur.com/9q8vmfJ.png)
+![preview 2](https://i.imgur.com/WxBKk5f.png)
+![preview 3](https://i.imgur.com/9Njo6MJ.png)
 
 ## Installation
 
