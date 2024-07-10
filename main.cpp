@@ -2,9 +2,13 @@
 #include "toml++/toml.hpp"
 #include "nya_commonhooklib.h"
 
+const char* sCollisionName = "data/tracks/menu/menu1/a/geometry/track_cdb.gen";
+const char* sStageName = "stage1";
 uintptr_t LoadMenuMapASM_envi = 0x8DA758;
 uintptr_t LoadMenuMapASM_call = 0x5793E0;
 uintptr_t LoadMenuMapASM_call2 = 0x579710;
+uintptr_t LoadMenuMapASM_call3 = 0x56D500;
+uintptr_t LoadMenuMapASM_malloc = 0x6035CE;
 uintptr_t LoadMenuMapASM_jmp = 0x4ABC2F;
 void __attribute__((naked)) LoadMenuMapASM() {
 	__asm__ (
@@ -18,18 +22,92 @@ void __attribute__((naked)) LoadMenuMapASM() {
 		"mov eax, [eax]\n\t"
 		"push eax\n\t" // a7, some ptr
 		"push 0x672738\n\t"
-		"push 0x672AB0\n\t"
-		"call %1\n\t"
+		"push %4\n\t"
+		"call %1\n\t" // load track
+
+		"push 0x40\n\t"
+		"call %5\n\t" // malloc
+		"add esp, 4\n\t"
+		"mov dword ptr [eax+0x30], 0\n\t"
+		"mov edi, %2\n\t"
+		"mov edi, [edi]\n\t"
+		"mov [edi+0x24], eax\n\t" // mov ptr to track + 0x24
+		"push eax\n\t"
+		"mov eax, %7\n\t"
+		"call %6\n\t" // load collision
+
 		"mov edi, %2\n\t"
 		"mov edi, [edi]\n\t"
 		"push edi\n\t"
-		"call %3\n\t"
+		"call %3\n\t" // load plants
 		"pop eax\n\t"
 		"pop edi\n\t"
 		"mov dword ptr [esi+0x1A0], 1\n\t"
 		"jmp %0\n\t"
 			:
-			:  "m" (LoadMenuMapASM_jmp), "m" (LoadMenuMapASM_call), "m" (LoadMenuMapASM_envi), "m" (LoadMenuMapASM_call2)
+			:  "m" (LoadMenuMapASM_jmp), "m" (LoadMenuMapASM_call), "m" (LoadMenuMapASM_envi), "m" (LoadMenuMapASM_call2), "m" (sStageName), "m" (LoadMenuMapASM_malloc), "m" (LoadMenuMapASM_call3), "m" (sCollisionName)
+	);
+}
+
+uintptr_t RenderMenuMapASM_call = 0x555B60;
+uintptr_t RenderMenuMapASM_call2 = 0x555A60;
+uintptr_t RenderMenuMapASM_jmp = 0x4CC0FA;
+void __attribute__((naked)) RenderMenuMapASM() {
+	__asm__ (
+		"push eax\n\t"
+		"push ecx\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"mov eax, [eax+0x1804]\n\t"
+		"mov eax, [eax+0x14C]\n\t"
+		"push eax\n\t"
+		"mov eax, esi\n\t" // +1B4
+		"mov ecx, 10\n\t"
+		"call %3\n\t"
+		"pop ecx\n\t"
+		"pop eax\n\t"
+
+		"push eax\n\t"
+		"push ecx\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"mov eax, [eax+0x1804]\n\t"
+		"mov eax, [eax+0x154]\n\t"
+		"push eax\n\t"
+		"mov eax, esi\n\t" // +1B4
+		"mov ecx, 11\n\t"
+		"call %1\n\t"
+		"pop ecx\n\t"
+		"pop eax\n\t"
+
+		"mov edx, [edi]\n\t"
+		"mov ecx, edi\n\t"
+		"call dword ptr [edx+0x60]\n\t"
+		"jmp %0\n\t"
+			:
+			:  "m" (RenderMenuMapASM_jmp), "m" (RenderMenuMapASM_call), "m" (LoadMenuMapASM_envi), "m" (RenderMenuMapASM_call2)
+	);
+}
+
+uintptr_t RenderMenuSkyASM_call = 0x592470;
+uintptr_t RenderMenuSkyASM_jmp = 0x4CBED1;
+void __attribute__((naked)) RenderMenuSkyASM() {
+	__asm__ (
+		// eax is camera ptr, then env ptr pushed, then some unused value
+		"pushad\n\t"
+		"push 10\n\t"
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"push eax\n\t"
+		"mov eax, ebp\n\t" // camera
+		"call %1\n\t"
+		"popad\n\t"
+
+		"mov eax, %2\n\t"
+		"mov eax, [eax]\n\t"
+		"jmp %0\n\t"
+			:
+			:  "m" (RenderMenuSkyASM_jmp), "m" (RenderMenuSkyASM_call), "m" (LoadMenuMapASM_envi)
 	);
 }
 
@@ -47,9 +125,9 @@ struct tGUIStruct {
 	float fCameraPosX;
 	float fCameraPosY;
 	float fCameraPosZ;
-	float fCameraPosOffsetX;
-	float fCameraPosOffsetY;
-	float fCameraPosOffsetZ;
+	float fMenuCarPosX;
+	float fMenuCarPosY;
+	float fMenuCarPosZ;
 	uint8_t _50C[0x4];
 	float fMenuCarMatrix[16];
 };
@@ -60,6 +138,9 @@ int SetCameraPosition(void* a1) {
 	if ( !data )
 		luaL_typerror(a1, 1, "GUI");
 	auto gui = *(tGUIStruct**)data;
+	gui->fMenuCarPosX = 0;
+	gui->fMenuCarPosY = 0;
+	gui->fMenuCarPosZ = 0;
 	gui->fCameraPosX = luaL_checknumber(a1, 2);
 	gui->fCameraPosY = luaL_checknumber(a1, 3);
 	gui->fCameraPosZ = luaL_checknumber(a1, 4);
@@ -72,6 +153,9 @@ int SetCameraTarget(void* a1) {
 	if ( !data )
 		luaL_typerror(a1, 1, "GUI");
 	auto gui = *(tGUIStruct**)data;
+	gui->fMenuCarPosX = 0;
+	gui->fMenuCarPosY = 0;
+	gui->fMenuCarPosZ = 0;
 	gui->fCameraTargetX = luaL_checknumber(a1, 2);
 	gui->fCameraTargetY = luaL_checknumber(a1, 3);
 	gui->fCameraTargetZ = luaL_checknumber(a1, 4);
@@ -84,8 +168,11 @@ int SetMenuCarTransform(void* a1) {
 	if ( !data )
 		luaL_typerror(a1, 1, "GUI");
 	auto gui = *(tGUIStruct**)data;
+	gui->fMenuCarPosX = 0;
+	gui->fMenuCarPosY = 0;
+	gui->fMenuCarPosZ = 0;
 	for (int i = 0; i < 16; i++) {
-		gui->fMenuCarMatrix[i] = luaL_checknumber(a1, 2);
+		gui->fMenuCarMatrix[i] = luaL_checknumber(a1, i + 2);
 	}
 	return 0;
 }
@@ -160,6 +247,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 			auto config = toml::parse_file("FlatOut2MenuMap_gcp.toml");
 			float fDrawDistance = config["main"]["draw_distance"].value_or(1000.0f);
 			bool bAddLUAFunctions = config["main"]["add_lua_functions"].value_or(true);
+			bool bAlwaysShowMenu = config["main"]["always_show_menu"].value_or(true);
 
 			static char path1[] = "Menu";
 			static char path2[] = "Menu1";
@@ -179,13 +267,29 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 
 			NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4ABC25, &LoadMenuMapASM);
 
+			NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4CC0F3, &RenderMenuMapASM);
+			NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4CBECC, &RenderMenuSkyASM);
+
 			if (bAddLUAFunctions) {
 				NyaHookLib::Patch(0x4A616E, aGUIFunctions);
+
+				// disable vanilla menucar placement code
 				NyaHookLib::Patch<uint16_t>(0x4AC4B5, 0x9090);
 				NyaHookLib::Fill(0x4AC4BF, 0x90, 0x6C);
-			}
+				NyaHookLib::Fill(0x4AC555, 0x90, 3);
+				NyaHookLib::Fill(0x4AC55F, 0x90, 6);
+				NyaHookLib::Patch<uint16_t>(0x4AC9D4, 0x9090);
+				NyaHookLib::Fill(0x4AC9DC, 0x90, 3);
+				NyaHookLib::Fill(0x4AC9E5, 0x90, 3);
+				NyaHookLib::Fill(0x4AC9EF, 0x90, 3);
 
-			//NyaHookLib::PatchRelative(NyaHookLib::CALL, 0x4AD5BE, 0x4A8E25); // remove backgrounds
+				if (bAlwaysShowMenu) {
+					NyaHookLib::Patch<uint16_t>(0x4ACA17, 0x28EB);
+					static float fSpeed = 100;
+					NyaHookLib::Patch(0x4AC69D + 2, &fSpeed);
+					NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4A8BBB, 0x4A8BD3);
+				}
+			}
 		} break;
 		default:
 			break;
