@@ -1,6 +1,11 @@
 #include <windows.h>
+#include <algorithm>
 #include "toml++/toml.hpp"
 #include "nya_commonhooklib.h"
+#include "nya_commontimer.h"
+#include "nya_commonmath.h"
+
+#include "spline_library/splines/uniform_cr_spline.h"
 
 bool bAlwaysShowMenu = true;
 
@@ -202,10 +207,46 @@ struct tGUIStruct {
 	float fMenuCarMatrix[16];
 };
 
+std::vector<NyaVec3> camSplinePaths;
+LoopingUniformCRSpline<NyaVec3>* camSpline;
+float camSplineSpeed = 0.01;
+double camSplineState = 0;
+void __fastcall MenuCameraLoop(tGUIStruct* pGUI) {
+	if (!camSpline) return;
+
+	static CNyaTimer timer;
+	camSplineState += timer.Process() * camSplineSpeed;
+
+	NyaVec3 pos = camSpline->getPosition(camSplineState);
+	pGUI->fCameraPosX = pos.x;
+	pGUI->fCameraPosY = pos.y;
+	pGUI->fCameraPosZ = pos.z;
+}
+
+uintptr_t MenuCameraLoopASM_jmp = 0x4A8A68;
+void __attribute__((naked)) MenuCameraLoopASM() {
+	__asm__ (
+		"pushad\n\t"
+		"mov ecx, ebx\n\t"
+		"call %1\n\t"
+		"popad\n\t"
+
+		"mov eax, 0x8E8464\n\t"
+		"mov eax, [eax]\n\t"
+		"jmp %0\n\t"
+			:
+			:  "m" (MenuCameraLoopASM_jmp), "i" (MenuCameraLoop)
+	);
+}
+
 int SetCameraPosition(void* a1) {
 	luaL_checktype(a1, 1, 7);
 	auto data = luaL_checkudata(a1, 1, "GUI");
 	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	if (camSpline) delete camSpline;
+	camSpline = nullptr;
+	camSplineState = 0;
 
 	auto gui = *(tGUIStruct**)data;
 	gui->fMenuCarPosX = 0;
@@ -229,6 +270,59 @@ int SetCameraTarget(void* a1) {
 	gui->fCameraTargetX = luaL_checknumber(a1, 2);
 	gui->fCameraTargetY = luaL_checknumber(a1, 3);
 	gui->fCameraTargetZ = luaL_checknumber(a1, 4);
+	return 0;
+}
+
+int SetCameraSplinePoint(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	int id = luaL_checknumber(a1, 2);
+	if (id >= 0 && id < camSplinePaths.size()) {
+		camSplinePaths[id].x = luaL_checknumber(a1, 3);
+		camSplinePaths[id].y = luaL_checknumber(a1, 4);
+		camSplinePaths[id].z = luaL_checknumber(a1, 5);
+	}
+
+	if (camSpline) delete camSpline;
+	camSpline = new LoopingUniformCRSpline<NyaVec3>(camSplinePaths);
+	return 0;
+}
+
+int SetCameraSplineSpeed(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	camSplineSpeed = luaL_checknumber(a1, 2);
+	return 0;
+}
+
+int SetCameraSplineCount(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	int count = luaL_checknumber(a1, 2);
+	if (count > 0) {
+		while (camSplinePaths.size() < count) camSplinePaths.push_back({0,0,0});
+		while (camSplinePaths.size() > count) camSplinePaths.pop_back();
+	}
+	if (camSpline) delete camSpline;
+	camSpline = nullptr;
+	return 0;
+}
+
+int ResetCameraSpline(void* a1) {
+	luaL_checktype(a1, 1, 7);
+	auto data = luaL_checkudata(a1, 1, "GUI");
+	if (!data) luaL_typerror(a1, 1, "GUI");
+
+	if (camSpline) delete camSpline;
+	camSpline = nullptr;
+	camSplinePaths.clear();
+	camSplineState = 0;
 	return 0;
 }
 
@@ -321,6 +415,10 @@ tLUAFunction aGUIFunctions[] = {
 		{ "CheckControllerDisconnect", 0x4AE9A0, 0 },
 		{ "SetCameraPosition", (uintptr_t)&SetCameraPosition, 0 },
 		{ "SetCameraTarget", (uintptr_t)&SetCameraTarget, 0 },
+		{ "SetCameraSplinePoint", (uintptr_t)&SetCameraSplinePoint, 0 },
+		{ "SetCameraSplineSpeed", (uintptr_t)&SetCameraSplineSpeed, 0 },
+		{ "SetCameraSplineCount", (uintptr_t)&SetCameraSplineCount, 0 },
+		{ "ResetCameraSpline", (uintptr_t)&ResetCameraSpline, 0 },
 		{ "SetMenuCarTransform", (uintptr_t)&SetMenuCarTransform, 0 },
 		{ "Hide3DMenu", (uintptr_t)&Hide3DMenu, 0 },
 		{ "Show3DMenu", (uintptr_t)&Show3DMenu, 0 },
@@ -373,6 +471,8 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 				NyaHookLib::Fill(0x4AC9DC, 0x90, 3);
 				NyaHookLib::Fill(0x4AC9E5, 0x90, 3);
 				NyaHookLib::Fill(0x4AC9EF, 0x90, 3);
+
+				NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4A8A63, &MenuCameraLoopASM);
 			}
 
 			if (bAlwaysShowMenu) {

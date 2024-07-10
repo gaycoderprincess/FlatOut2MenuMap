@@ -12,7 +12,9 @@ SET(CMAKE_CXX_STANDARD 20)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=intel -s -static")
 
-add_library(FlatOut2MenuMap SHARED main.cpp)
+add_library(FlatOut2MenuMap SHARED
+        ../nya-common/nya_commontimer.cpp
+        main.cpp)
 target_include_directories(FlatOut2MenuMap PUBLIC ../nya-common)
 target_include_directories(FlatOut2MenuMap PUBLIC ../nya-common/3rdparty)
 target_link_options(FlatOut2MenuMap PRIVATE "-Wl,--exclude-all-symbols")

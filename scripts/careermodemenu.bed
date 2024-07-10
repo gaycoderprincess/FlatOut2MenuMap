@@ -240,10 +240,17 @@ function menu_career.init(self)
 		local mat = Startpoints[19].Orientation
 		local offset = {1.45, 1.3, 6.05}
 		
-		GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
+		--//GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
 		GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
 		--//GUI:SetMenuCarTransform(mat.x[1], mat.x[2], mat.x[3], 0, mat.y[1], mat.y[2], mat.y[3], 0, mat.z[1], mat.z[2], mat.z[3], 0, pos[1], pos21], pos[3], 1)
 		GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2], pos[3], 1)
+	
+		GUI:SetCameraSplineCount(4)
+		GUI:SetCameraSplinePoint(0, -23.259939, 1.334628, 79.863052)
+		GUI:SetCameraSplinePoint(1, -24.949619, 1.334628, 79.333084)
+		GUI:SetCameraSplinePoint(2, -26.532896, 1.334628, 80.103554)
+		GUI:SetCameraSplinePoint(3, -24.949619, 1.334628, 79.333084)
+		GUI:SetCameraSplineSpeed(0.1)
 	end
 
 	if not PlayerProfile:IsCareerWelcome1Displayed() then

@@ -156,10 +156,15 @@ function menu_singleplayer.init(self)
 	local offset = {-10.5, 1.1, 10.5}
 		
 	--//GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
-	GUI:SetCameraPosition(12.5, -13.3, -96)
+	--//GUI:SetCameraPosition(12.5, -13.3, -96)
 	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
 	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] - 3, pos[3], 1)
 	--//GUI:SetMenuCarTransform(-0.589197,-0.000000,0.807989, 0, -0.000000,1.000000,-0.000000, 0, -0.807989,-0.000000,-0.589197, pos[1], pos[2], pos[3], 1)
+	
+	GUI:SetCameraSplineCount(2)
+	GUI:SetCameraSplinePoint(0, 12.200417, -13.284972, -96.583572)
+	GUI:SetCameraSplinePoint(1, 10.804033, -13.284972, -96.364906)
+	GUI:SetCameraSplineSpeed(0.1)
 end
 
 function menu_singleplayer.buttonChange(self,oldbutton,newbutton)
