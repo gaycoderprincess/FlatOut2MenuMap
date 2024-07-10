@@ -22,6 +22,12 @@ GUI:SetCameraTarget(x, y, z)
 
 GUI:SetMenuCarTransform(x1, y1, z1, 0, x2, y2, z2, 0, x3, y3, z3, 0, x4, y4, z4, 1) (this function takes a 4x4 matrix, first 3 pairs are the orientation, then the position)
 
+GUI:SetCameraSplineCount(n)
+
+GUI:SetCameraSplinePoint(i, x, y, z)
+
+GUI:SetCameraSplineSpeed(f)
+
 GUI:Hide3DMenu()
 
 GUI:Show3DMenu()
