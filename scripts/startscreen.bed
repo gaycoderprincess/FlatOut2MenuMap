@@ -41,8 +41,6 @@ end
 function menu_startscreen.init(self)
 --//	self.parent:init(self)
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 
 	local text=TRANSLATOR(PRESS_START)

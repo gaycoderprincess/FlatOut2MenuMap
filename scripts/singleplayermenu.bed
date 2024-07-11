@@ -148,8 +148,6 @@ function menu_singleplayer.init(self)
 	--//GUI:SetBackground("data/menu/menu_background.tga")
 	GUI:SetBackgroundVideo("data/video/bg_main")
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 end
 

@@ -90,8 +90,6 @@ function menu_mainmenu.init(self)
 	--//GUI:SetBackground("data/menu/menu_background.tga")
 	GUI:SetBackgroundVideo("data/video/bg_main")
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 	
 	local size=SIZE(188,75) --//GetResourceSize(self:getResource("title_logo"))

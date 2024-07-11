@@ -34,8 +34,6 @@ end
 function menu_lan_modeselect.init(self)
 	self.parent:init(self)
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 	
 	GUI:SetBackgroundVideo("data/video/bg_main")

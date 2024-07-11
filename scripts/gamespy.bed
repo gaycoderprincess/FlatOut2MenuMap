@@ -201,8 +201,6 @@ end
 function menu_multiplayer_gamespy.init(self)
 	self.parent:init(self)
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 
 	GUI:SetBackgroundVideo("data/video/bg_main")
@@ -309,8 +307,6 @@ end
 function menu_multiplayer_gamespy_checkavailability.init(self)
 	self.parent:init(self)
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 
 	GUI:SetBackgroundVideo("data/video/bg_main")

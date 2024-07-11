@@ -272,8 +272,6 @@ end
 function menu_profiles.init(self)
 	self.parent:init(self)
 	
-	GUI:LoadCar(1, 1)
-	
 	CAM_TitleCamera()
 
 	Frame{Position=POS(30,57),Size=SIZE(246,286)}:AttachResource(self:getResource("profile_picture_bg"))
@@ -431,8 +429,6 @@ end
 
 function menu_profiles_create_name.init(self)
 	self.parent:init(self)
-	
-	GUI:LoadCar(1,1)
 	
 	CAM_TitleCamera()
 

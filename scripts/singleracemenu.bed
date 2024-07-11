@@ -223,8 +223,6 @@ end
 function menu_singleplayer_racetype.init(self)
 	self.parent:init(self)
 	
-	GUI:LoadCar(1,1)
-	
 	CAM_TitleCamera()
 
 	Frame{Name="garage_cars_bg",Position=POS(0,335),Size=SIZE(640,64)}:AttachResource(self:getResource("selection_bg"))
@@ -519,8 +517,6 @@ end
 
 function menu_singleplayer_trackselection.init(self)
 	self.parent:init(self)
-	
-	GUI:LoadCar(1,1)
 	
 	CAM_TitleCamera()
 

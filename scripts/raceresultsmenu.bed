@@ -75,8 +75,6 @@ function menu_raceresults.init(self)
 		
 	end
 	
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 end
 

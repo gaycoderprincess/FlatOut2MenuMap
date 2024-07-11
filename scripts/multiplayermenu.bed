@@ -281,8 +281,6 @@ end
 function menu_multiplayer.init(self) 
 	self.parent:init(self)
 
-	GUI:LoadCar(1,1)
-		
 	CAM_TitleCamera()
 	
 	GUI:SetBackgroundVideo("data/video/bg_main")

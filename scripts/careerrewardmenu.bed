@@ -209,8 +209,6 @@ function menu_stunt_racerewards.init(self)
 	if db.GameFlow.PreRace.Mode == GM_CAREER then
 		CAM_CareerBaseCamera()
 	else
-		GUI:LoadCar(1,1)
-		
 		CAM_TitleCamera()
 	end
 
@@ -307,8 +305,6 @@ function menu_derby_racerewards.init(self)
 	if db.GameFlow.PreRace.Mode == GM_CAREER then
 		CAM_CareerBaseCamera()
 	else
-		GUI:LoadCar(1,1)
-		
 		CAM_TitleCamera()
 	end
 
@@ -674,8 +670,6 @@ function menu_career_cup_topdrivers.init(self)
 	if db.GameFlow.PreRace.Mode == GM_CAREER then
 		CAM_CareerBaseCamera()
 	else
-		GUI:LoadCar(1,1)
-		
 		CAM_TitleCamera()
 	end
 
