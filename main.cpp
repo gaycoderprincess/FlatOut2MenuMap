@@ -5,7 +5,7 @@
 #include "nya_commontimer.h"
 #include "nya_commonmath.h"
 
-#include "spline_library/splines/uniform_cr_spline.h"
+#include "spline_library/spline_library/splines/uniform_cr_spline.h"
 
 bool bAlwaysShowMenu = true;
 
