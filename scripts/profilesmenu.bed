@@ -27,6 +27,7 @@ dofile("data/menu/keyboard.bed")
 dofile("data/menu/track_racing_1.bed")
 --//dofile("data/menu/hardcore_selected.bed")
 --//dofile("data/menu/beginner_selected.bed")
+dofile("data/scripts/menucameras.bed")
 
 
 local testclasses = {
@@ -270,7 +271,10 @@ end
 
 function menu_profiles.init(self)
 	self.parent:init(self)
-
+	
+	GUI:LoadCar(1, 1)
+	
+	CAM_TitleCamera()
 
 	Frame{Position=POS(30,57),Size=SIZE(246,286)}:AttachResource(self:getResource("profile_picture_bg"))
 
@@ -330,6 +334,8 @@ end
 function menu_profiles.starthide(self)
 	Save.SetSaveDevicePoll(false)
 	self.parent:starthide(self)
+	
+	GUI:HideCar()
 end
 
 
@@ -425,7 +431,10 @@ end
 
 function menu_profiles_create_name.init(self)
 	self.parent:init(self)
-
+	
+	GUI:LoadCar(1,1)
+	
+	CAM_TitleCamera()
 
 	--//StaticText{Title=TRANSLATOR(TITLE_PLAYERNAME),Position=POS(100,88),Font=fontlarge()}
 
@@ -458,6 +467,12 @@ end
 function menu_profiles_create_name.deinit(self)
 	self.parent:deinit(self)
 
+end
+
+function menu_profiles_create_name.starthide(self)
+	self.parent:starthide(self)
+	
+	GUI:HideCar()
 end
 
 function menu_profiles_create_name.update(self)

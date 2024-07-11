@@ -1,0 +1,58 @@
+--///////////////////////////////////////////////////////////////////////////
+--// MenuCameras.bed - preset 3D cameras for each menu
+--///////////////////////////////////////////////////////////////////////////
+
+
+dofile("data/tracks/menu/menu1/a/data/startpoints.bed")
+
+function CAM_CarDealerCamera()
+	local pos = Startpoints[1].Position
+		
+	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
+	GUI:SetMenuCarTransform(0.470459,0.000000,-0.882422, 0, 0.000000,1.000000,0.000000, 0, 0.882422,0.000000,0.470459, 0, pos[1], pos[2] - 0.02, pos[3], 1)
+		
+	GUI:SetCameraSplineCount(2)
+	GUI:SetCameraSplinePoint(0, 26.437243, 1.489582, 89.778931)
+	GUI:SetCameraSplinePoint(1, 26.459124, 1.489582, 88.584610)
+	GUI:SetCameraSplineSpeed(0.1)
+end
+
+function CAM_CareerGarageCamera()
+	local pos = Startpoints[19].Position
+		
+	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
+	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2], pos[3], 1)
+	
+	GUI:SetCameraSplineCount(4)
+	GUI:SetCameraSplinePoint(0, -23.259939, 1.334628, 79.863052)
+	GUI:SetCameraSplinePoint(1, -24.949619, 1.334628, 79.333084)
+	GUI:SetCameraSplinePoint(2, -26.532896, 1.334628, 80.103554)
+	GUI:SetCameraSplinePoint(3, -24.949619, 1.334628, 79.333084)
+	GUI:SetCameraSplineSpeed(0.1)
+end
+
+function CAM_TitleCamera()
+	local pos = Startpoints[20].Position
+		
+	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
+	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] - 3, pos[3], 1)
+
+	GUI:SetCameraSplineCount(2)
+	GUI:SetCameraSplinePoint(0, 12.200417, -13.284972, -96.583572)
+	GUI:SetCameraSplinePoint(1, 10.804033, -13.284972, -96.364906)
+	GUI:SetCameraSplineSpeed(0.1)
+end
+
+function CAM_CareerBaseCamera()
+	if PlayerProfile:GetActiveCar() ~=  -1 then
+		GUI:LoadCar(GetCarDataIndex(PlayerProfile:GetActiveCar()),Garage:GetCarSkinIndex(PlayerProfile:GetActiveCar())) --//PlayerProfile:GetActiveCar()+1
+		GUI:AllowCarRotate(FALSE)
+		GUI:SetCarRotate(FALSE)
+		
+		CAM_CareerGarageCamera()
+	else
+		GUI:LoadCar(1, 1)
+		
+		CAM_TitleCamera()
+	end
+end

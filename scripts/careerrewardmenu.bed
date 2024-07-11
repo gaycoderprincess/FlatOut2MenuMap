@@ -15,6 +15,7 @@ dofile("data/menu/celebration.bed")
 dofile("data/menu/medals.bed")
 dofile("data/menu/garage_elements1.bed")
 dofile("data/menu/backdrops2.bed")
+dofile("data/scripts/menucameras.bed")
 
 local subclasses = {
 	[1] = { name=TRANSLATOR(TITLE_BEGINNER), subclass=1 },
@@ -204,6 +205,14 @@ end
 
 function menu_stunt_racerewards.init(self)
 	self.parent:init(self)
+	
+	if db.GameFlow.PreRace.Mode == GM_CAREER then
+		CAM_CareerBaseCamera()
+	else
+		GUI:LoadCar(1,1)
+		
+		CAM_TitleCamera()
+	end
 
 	Frame{Position=POS(0,168),Size=SIZE(370,21)}:AttachResource(self:getResource("narrow_black_bar_main"))
 	Frame{Position=POS(370,168),Size=SIZE(31,21)}:AttachResource(self:getResource("narrow_black_bar_tip_right"))
@@ -268,6 +277,12 @@ function menu_stunt_racerewards.deinit(self)
 
 end
 
+function menu_stunt_racerewards.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
+end
+
 --// ---------------------------------------------------------------------------------------------------------------------------------
 --// derby racerewards
 --// ---------------------------------------------------------------------------------------------------------------------------------
@@ -288,6 +303,14 @@ end
 
 function menu_derby_racerewards.init(self)
 	self.parent:init(self)
+	
+	if db.GameFlow.PreRace.Mode == GM_CAREER then
+		CAM_CareerBaseCamera()
+	else
+		GUI:LoadCar(1,1)
+		
+		CAM_TitleCamera()
+	end
 
 	Frame{Position=POS(0,80),Size=SIZE(382,21)}:AttachResource(self:getResource("narrow_black_bar_main"))
 	Frame{Position=POS(382,80),Size=SIZE(31,21)}:AttachResource(self:getResource("narrow_black_bar_tip_right"))
@@ -430,6 +453,12 @@ function menu_derby_racerewards.deinit(self)
 
 end
 
+function menu_derby_racerewards.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
+end
+
 
 
 
@@ -454,6 +483,8 @@ end
 
 function menu_career_cup_racerewards.init(self)
 	self.parent:init(self)
+	
+	CAM_CareerBaseCamera()
 
 	Frame{Position=POS(0,80),Size=SIZE(382,21)}:AttachResource(self:getResource("narrow_black_bar_main"))
 	Frame{Position=POS(382,80),Size=SIZE(31,21)}:AttachResource(self:getResource("narrow_black_bar_tip_right"))
@@ -607,6 +638,12 @@ function menu_career_cup_racerewards.deinit(self)
 
 end
 
+function menu_career_cup_racerewards.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
+end
+
 --// ---------------------------------------------------------------------------------------------------------------------------------
 --// 
 --// ---------------------------------------------------------------------------------------------------------------------------------
@@ -631,27 +668,16 @@ function menu_career_cup_topdrivers.create(self)
 	self:loadResources()
 end
 
-dofile("data/tracks/menu/menu1/a/data/startpoints.bed")
-
 function menu_career_cup_topdrivers.init(self)
 	self.parent:init(self)
 	
-	GUI:LoadCar(1,1)
+	if db.GameFlow.PreRace.Mode == GM_CAREER then
+		CAM_CareerBaseCamera()
+	else
+		GUI:LoadCar(1,1)
 		
-	local pos = Startpoints[20].Position
-	local mat = Startpoints[20].Orientation
-	local offset = {-10.5, 1.1, 10.5}
-		
-	--//GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
-	--//GUI:SetCameraPosition(12.5, -13.3, -96)
-	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
-	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] - 3, pos[3], 1)
-	--//GUI:SetMenuCarTransform(-0.589197,-0.000000,0.807989, 0, -0.000000,1.000000,-0.000000, 0, -0.807989,-0.000000,-0.589197, pos[1], pos[2], pos[3], 1)
-
-	GUI:SetCameraSplineCount(2)
-	GUI:SetCameraSplinePoint(0, 12.200417, -13.284972, -96.583572)
-	GUI:SetCameraSplinePoint(1, 10.804033, -13.284972, -96.364906)
-	GUI:SetCameraSplineSpeed(0.1)
+		CAM_TitleCamera()
+	end
 
 	local emptypic=self:getResource("portrait_empty")
 	local emptysize=GetResourceSize(emptypic)
@@ -832,13 +858,9 @@ function menu_career_cup_topdrivers.init(self)
 	GUI:SetBackground("data/menu/career_race_rewards_background.tga")
 end
 
-function menu_career_cup_topdrivers.deinit(self)
-	self.parent:deinit(self)
-
-	GUI:HideCar()
-end
-
-function menu_career_cup_topdrivers.starthide(self)	
+function menu_career_cup_topdrivers.starthide(self)
+	self.parent:starthide(self)
+	
 	GUI:HideCar()
 end
 
@@ -907,7 +929,8 @@ end
 
 function menu_career_cup_scorecard.init(self)
 	self.parent:init(self)
-
+	
+	CAM_CareerBaseCamera()
 
 	--//local w=Button{Position=POS(0,82),Size=SIZE(640,25),Alpha=0.4}:AttachResource(self:getResource("black_transparent"))
 
@@ -1016,6 +1039,12 @@ function menu_career_cup_scorecard.deinit(self)
 
 end
 
+function menu_career_cup_scorecard.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
+end
+
 
 --// ---------------------------------------------------------------------------------------------------------------------------------
 --// subclass completed
@@ -1035,6 +1064,8 @@ end
 
 function menu_career_subclass_unlock.init(self)
 	self.parent:init(self)
+	
+	CAM_CareerBaseCamera()
 
 	Frame{Position=POS(0,97),Size=SIZE(640,221),Layer=0}:AttachResource(self:getResource("car_shop_confirmation_bg_bar"))
 	Frame{Position=POS(0,199),Size=SIZE(640,73),Layer=1,DrawBackgroundColor=TRUE,Alpha=0.5,Color=GetPaletteColor(0)}
@@ -1065,6 +1096,12 @@ end
 function menu_career_subclass_unlock.deinit(self)
 	self.parent:deinit(self)
 
+end
+
+function menu_career_subclass_unlock.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
 end
 
 
@@ -1135,6 +1172,8 @@ end
 
 function menu_career_final_unlock.init(self)
 	self.parent:init(self)
+	
+	CAM_CareerBaseCamera()
 
 	Frame{Position=POS(0,97),Size=SIZE(640,221),Layer=0}:AttachResource(self:getResource("car_shop_confirmation_bg_bar"))
 	Frame{Position=POS(0,199),Size=SIZE(640,73),Layer=1,DrawBackgroundColor=TRUE,Alpha=0.5,Color=GetPaletteColor(0)}
@@ -1179,6 +1218,12 @@ end
 function menu_career_final_unlock.deinit(self)
 	self.parent:deinit(self)
 
+end
+
+function menu_career_final_unlock.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
 end
 
 
@@ -1246,6 +1291,8 @@ end
 
 function menu_career_car_unlock.init(self)
 	self.parent:init(self)
+	
+	CAM_CareerBaseCamera()
 
 	Frame{Position=POS(0,97),Size=SIZE(640,221),Layer=0}:AttachResource(self:getResource("car_shop_confirmation_bg_bar"))
 
@@ -1320,8 +1367,8 @@ end
 
 function menu_career_event_unlock.init(self)
 	self.parent:init(self)
-
-
+	
+	CAM_CareerBaseCamera()
 
 	Frame{Position=POS(0,335),Size=SIZE(640,64)}:AttachResource(self:getResource("selection_bg"))
 
@@ -1364,5 +1411,11 @@ end
 function menu_career_event_unlock.deinit(self)
 	self.parent:deinit(self)
 
+end
+
+function menu_career_event_unlock.starthide(self)
+	self.parent:starthide(self)
+
+	GUI:HideCar()
 end
 

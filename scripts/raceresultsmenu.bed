@@ -9,6 +9,8 @@
 --// @Author Timo Kamarainen (timo.kamarainen@bugbear.fi)
 --///////////////////////////////////////////////////////////////////////////
 
+dofile("data/scripts/menucameras.bed")
+
 menu_raceresults = CreateMenuFromTemplate( "template_basic" )
 
 menu_raceresults.options.title = TRANSLATOR(TITLE_RACERESULTS)
@@ -45,8 +47,6 @@ function menu_raceresults.create( self )
 	
 end
 
-dofile("data/tracks/menu/menu1/a/data/startpoints.bed")
-
 function menu_raceresults.init(self)
 	self.parent:init(self)
 
@@ -77,37 +77,13 @@ function menu_raceresults.init(self)
 	
 	GUI:LoadCar(1,1)
 		
-	local pos = Startpoints[20].Position
-	local mat = Startpoints[20].Orientation
-	local offset = {-10.5, 1.1, 10.5}
-		
-	--//GUI:SetCameraPosition(pos[1] - offset[1], pos[2] + offset[2], pos[3] - offset[3])
-	--//GUI:SetCameraPosition(12.5, -13.3, -96)
-	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
-	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] - 3, pos[3], 1)
-	--//GUI:SetMenuCarTransform(-0.589197,-0.000000,0.807989, 0, -0.000000,1.000000,-0.000000, 0, -0.807989,-0.000000,-0.589197, pos[1], pos[2], pos[3], 1)
-
-	GUI:SetCameraSplineCount(2)
-	GUI:SetCameraSplinePoint(0, 12.200417, -13.284972, -96.583572)
-	GUI:SetCameraSplinePoint(1, 10.804033, -13.284972, -96.364906)	
-	GUI:SetCameraSplineSpeed(0.1)
+	CAM_TitleCamera()
 end
-
 
 function menu_raceresults.update(self,time)
 	self.parent:update(self,time)
 end
 
-
-function menu_raceresults.deinit(self)
-	self.parent:deinit(self)
-	
-	GUI:HideCar()
-end
-
 function menu_raceresults.starthide(self)	
 	GUI:HideCar()
 end
-
-
-
