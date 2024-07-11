@@ -9,7 +9,7 @@ function CAM_CarDealerCamera()
 	local pos = Startpoints[1].Position
 		
 	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
-	GUI:SetMenuCarTransform(0.470459,0.000000,-0.882422, 0, 0.000000,1.000000,0.000000, 0, 0.882422,0.000000,0.470459, 0, pos[1], pos[2] - 0.02, pos[3], 1)
+	GUI:SetMenuCarTransform(0.470459,0.000000,-0.882422, 0, 0.000000,1.000000,0.000000, 0, 0.882422,0.000000,0.470459, 0, pos[1], pos[2] + 0.03, pos[3], 1)
 		
 	GUI:SetCameraSplineCount(2)
 	GUI:SetCameraSplinePoint(0, 26.437243, 1.489582, 89.778931)

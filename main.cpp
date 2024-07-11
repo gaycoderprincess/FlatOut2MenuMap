@@ -437,6 +437,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 			float fDrawDistance = config["main"]["draw_distance"].value_or(1000.0f);
 			bool bAddLUAFunctions = config["main"]["add_lua_functions"].value_or(true);
 			bAlwaysShowMenu = config["main"]["always_show_menu"].value_or(true);
+			bool bAlwaysUpdateCamera = config["main"]["always_update_camera"].value_or(true);
 
 			static char path1[] = "Menu";
 			static char path2[] = "Menu1";
@@ -480,6 +481,10 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 				static float fadeSpeed = 100;
 				NyaHookLib::Patch(0x4AC69D + 2, &fadeSpeed);
 				NyaHookLib::PatchRelative(NyaHookLib::JMP, 0x4A8BBB, 0x4A8BD3);
+			}
+
+			if (bAlwaysUpdateCamera) {
+				NyaHookLib::Fill(0x4AC70A, 0x90, 6);
 			}
 		} break;
 		default:
