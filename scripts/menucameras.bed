@@ -21,7 +21,7 @@ function CAM_CareerGarageCamera()
 	local pos = Startpoints[19].Position
 		
 	GUI:SetCameraTarget(pos[1], pos[2] + 0.9, pos[3])
-	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2], pos[3], 1)
+	GUI:SetMenuCarTransform(-0.988637,0.000000,-0.150321, 0, 0.000000,1.000000,0.000000, 0, 0.150321,0.000000,-0.988637, 0, pos[1], pos[2] + 0.01, pos[3], 1)
 	
 	GUI:SetCameraSplineCount(4)
 	GUI:SetCameraSplinePoint(0, -23.259939, 1.334628, 79.863052)
