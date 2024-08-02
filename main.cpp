@@ -429,7 +429,8 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 	switch( fdwReason ) {
 		case DLL_PROCESS_ATTACH: {
 			if (NyaHookLib::GetEntryPoint() != 0x202638) {
-				MessageBoxA(nullptr, "Unsupported game version! Make sure you're using v1.2 (.exe size of 2990080 bytes)", "nya?!~", MB_ICONERROR);
+				MessageBoxA(nullptr, "Unsupported game version! Make sure you're using DRM-free v1.2 (.exe size of 2990080 bytes)", "nya?!~", MB_ICONERROR);
+				exit(0);
 				return TRUE;
 			}
 
