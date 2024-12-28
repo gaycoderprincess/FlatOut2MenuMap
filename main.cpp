@@ -7,6 +7,9 @@
 
 #include "spline_library/spline_library/splines/uniform_cr_spline.h"
 
+#include "fo2.h"
+#include "../nya-common-fouc/fo2versioncheck.h"
+
 bool bAlwaysShowMenu = true;
 
 const char* sCollisionName = "data/tracks/menu/menu1/a/geometry/track_cdb.gen";
@@ -185,12 +188,6 @@ void __attribute__((naked)) RenderMenuSkyASM() {
 			:  "m" (RenderMenuSkyASM_jmp), "m" (RenderMenuSkyASM_call), "m" (LoadMenuMapASM_envi)
 	);
 }
-
-auto luaL_checktype = (void(*)(void*, int, int))0x5B5DC0;
-auto luaL_checkudata = (void*(*)(void*, int, const char*))0x5B5D00;
-auto luaL_typerror = (void(*)(void*, int, const char*))0x5B5A50;
-auto luaL_checknumber = (double(*)(void*, int))0x5B5F20;
-auto lua_tonumber = (double(*)(void*, int))0x5B4300;
 
 struct tGUIStruct {
 	uint8_t _0[0x4E8];
@@ -428,11 +425,7 @@ tLUAFunction aGUIFunctions[] = {
 BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 	switch( fdwReason ) {
 		case DLL_PROCESS_ATTACH: {
-			if (NyaHookLib::GetEntryPoint() != 0x202638) {
-				MessageBoxA(nullptr, "Unsupported game version! Make sure you're using DRM-free v1.2 (.exe size of 2990080 bytes)", "nya?!~", MB_ICONERROR);
-				exit(0);
-				return TRUE;
-			}
+			DoFlatOutVersionCheck(FO2Version::FO2_1_2);
 
 			auto config = toml::parse_file("FlatOut2MenuMap_gcp.toml");
 			float fDrawDistance = config["main"]["draw_distance"].value_or(1000.0f);
